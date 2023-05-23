@@ -4,19 +4,29 @@ def student_check(data):
     if data == '':
         print("Incorrect credentials")
         return False
+    double_symbol_name = False
+    double_symbol_surname = False
     name_regex = r"^[A-Za-z][A-Za-z\-\']*[A-Za-z]$"
     surname_regex = r"^[A-Za-z][A-Za-z\-\']*[A-Za-z]$"
     email_regex = r"[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*"
     name = data.split()[0]
     surname = data.split()[1:-1]
     email = data.split()[-1]
+    for index, letter in enumerate(name):
+        if letter in ['-','\'']:
+            if name[index-1] in ['-','\''] or name[index+1:index+2] in ['-','\'']:
+                double_symbol_name = True
+    for index, letter in enumerate(surname):
+        if letter in ['-','\'']:
+            if surname[index-1] in ['-','\''] or surname[index+1:index+2] in ['-','\'']:
+                double_symbol_surname = True
     if len(data.split()) < 3:
         print("Incorrect credentials")
         return False
-    if not re.match(name_regex, name):
+    if not re.match(name_regex, name) or double_symbol_name:
         print("Incorrect first name")
         return False
-    if not all(re.match(surname_regex, s) for s in surname):
+    if not all(re.match(surname_regex, s) for s in surname) or double_symbol_surname:
         print("Incorrect surname")
         return False
     if not re.match(email_regex, email):
