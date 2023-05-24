@@ -16,10 +16,14 @@ def student_check(data):
         if letter in ['-','\'']:
             if name[index-1] in ['-','\'']:
                 double_symbol_name = True
-    for index, letter in enumerate(surname):
-        if letter in ['-','\'']:
-            if surname[index-1] in ['-','\'']:
-                double_symbol_surname = True
+    for last_name in surname:
+        for index, letter in enumerate(last_name):
+            if letter in ['-','\'']:
+                if index == 0:
+                    print("Incorrect last name")
+                    return False
+                if last_name[index-1] in ['-','\'']:
+                    double_symbol_surname = True
     if len(data.split()) < 3:
         print("Incorrect credentials")
         return False
@@ -27,7 +31,7 @@ def student_check(data):
         print("Incorrect first name")
         return False
     if not all(re.match(surname_regex, s) for s in surname) or double_symbol_surname:
-        print("Incorrect surname")
+        print("Incorrect last name")
         return False
     if not re.match(email_regex, email):
         print("Incorrect email")
