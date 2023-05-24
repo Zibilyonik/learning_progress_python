@@ -14,11 +14,11 @@ def student_check(data):
     email = data.split()[-1]
     for index, letter in enumerate(name):
         if letter in ['-','\'']:
-            if name[index-1] in ['-','\''] or name[index+1:index+2] in ['-','\'']:
+            if name[index-1] in ['-','\'']:
                 double_symbol_name = True
     for index, letter in enumerate(surname):
         if letter in ['-','\'']:
-            if surname[index-1] in ['-','\''] or surname[index+1:index+2] in ['-','\'']:
+            if surname[index-1] in ['-','\'']:
                 double_symbol_surname = True
     if len(data.split()) < 3:
         print("Incorrect credentials")
