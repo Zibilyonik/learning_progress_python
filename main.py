@@ -53,7 +53,7 @@ def student_check(data):
     return name, surname, email
 
 
-def student_add(students, new_id = 10000):
+def student_add(students, new_id=10000):
     """takes user input for student credentials and adds them to students dictionary
 
     Args:
@@ -63,21 +63,27 @@ def student_add(students, new_id = 10000):
     Returns:
         int, dict: returns count of added students and updated students dictionary
     """
-    if students:
-        new_id = int(students[-1]["id"]) + 1
     count = 0
     updated_students = students
     print("Enter student credentials or 'back' to return:")
     user_input = input().strip()
     while user_input != "back":
+        new_id = len(updated_students) + 10000
         student = student_check(user_input)
         if student:
             if email_check(student[2], students):
-                updated_students[new_id] = {"name": student[0], "surname": student[1],
-                     "email": student[2], "id": new_id,
-                     "py": 0, "dsa": 0 , "db": 0, "fl": 0} 
-            print("Student has been added.")
-            count += 1
+                updated_students[student[0]] = {
+                    "name": student[0],
+                    "surname": student[1],
+                    "email": student[2],
+                    "id": new_id,
+                    "py": 0,
+                    "dsa": 0,
+                    "db": 0,
+                    "fl": 0,
+                }
+                print("Student has been added.")
+                count += 1
         user_input = input().strip()
     return count, updated_students
 
@@ -87,24 +93,31 @@ def grade_add(students):
 
     Args:
         students (dict): students dictionary
-        
+
     Returns:
         dict: updated students dictionary
     """
     print("Enter an id and points or 'back' to return:")
-    user_input = input().strip().split()
-    student = id_check(user_input[0], students)
-    if student:
-        if len(user_input) == 5 and all(point < 0 for point in user_input[1:]):
-            students[student]["py"] += int(user_input[1])
-            students[student]["dsa"] += int(user_input[2])
-            students[student]["db"] += int(user_input[3])
-            students[student]["fl"] += int(user_input[4])
-            print("Grade has been added.")
-        else:
-            print("Incorrect input")
+    user_input = input().strip()
+    while user_input != "back":
+        user_input = user_input.split()
+        student = id_check(user_input[0], students)
+        student_grades = user_input[3:]
+        if student:
+            if len(user_input) != 7 or any(
+                not point.isdigit() for point in student_grades
+            ):
+                print("Incorrect points format.")
+            elif any(point < "0" for point in student_grades):
+                print("Incorrect points format.")
+            else:
+                students[user_input[0]]["py"] += int(student_grades[0])
+                students[user_input[0]]["dsa"] += int(student_grades[1])
+                students[user_input[0]]["db"] += int(student_grades[2])
+                students[user_input[0]]["fl"] += int(student_grades[3])
+                print("Points updated.")
+        user_input = input().strip()
     return students
-
 
 
 def command_list(command):
@@ -125,29 +138,49 @@ def command_list(command):
             print(f"Total {count} students have been added.")
         elif command == "back":
             print("Enter 'exit' to exit the program")
-        elif command == "list students":
+        elif command == "add points":
+            students = grade_add(students)
+        elif command == "find":
+            print("Enter an id or 'back' to return:")
+            check_student = input().strip()
+            while check_student != "back":
+                name = check_student.split()[0:1]
+                if name:
+                    student = id_check(name[0], students)
+                else:
+                    print("No student is found for id=")
+                if student:
+                    print(
+                        f"{student['name']} {student['surname']} {student['email']} points: Python={student['py']} DSA={student['dsa']} Databases={student['db']} Flask={student['fl']}"
+                    )
+                check_student = input().strip()
+        elif command == "list":
             print("List of students:")
-            for student in students:
-                print(f"{student['name']} {student['surname']} {student['email']}")
+            if not students:
+                print("No students found.")
+            else:
+                for student in students:
+                    print(
+                        f"{students[student]['name']} {' '.join(students[student]['surname'])} {students[student]['email']}"
+                    )
         else:
             print("Unknown command!")
         command = input()
-
 
 
 def id_check(student_id, students):
     """checks if student id exists and returns student if it does
 
     Args:
-        student_id (int, str): id of the student 
+        student_id (int, str): id of the student
         students (dict): students dictionary
 
     Returns:
         bool, dict: returns False if student is not found, otherwise returns student
     """
     for student in students:
-        if student_id == student["id"]:
-            return student["id"]
+        if student_id == students[student]["name"]:
+            return students[student]
     print(f"No student is found for id={student_id}")
     return False
 
@@ -163,14 +196,14 @@ def email_check(email, students):
         bool: returns False if email exists, otherwise returns True
     """
     for student in students:
-        if email == student["email"]:
-            print("Email already exists")
+        if email == students[student]["email"]:
+            print("This email is already taken.")
             return False
     return True
 
+
 def main():
-    """main function
-    """
+    """main function"""
     print("Learning progress tracker")
     command = input()
     command_list(command.strip())
