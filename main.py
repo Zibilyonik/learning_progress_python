@@ -73,11 +73,9 @@ def student_add(students, new_id = 10000):
         student = student_check(user_input)
         if student:
             if email_check(student[2], students):
-                updated_students.append(
-                    {"name": student[0], "surname": student[1],
+                updated_students[new_id] = {"name": student[0], "surname": student[1],
                      "email": student[2], "id": new_id,
                      "py": 0, "dsa": 0 , "db": 0, "fl": 0} 
-                )
             print("Student has been added.")
             count += 1
         user_input = input().strip()
